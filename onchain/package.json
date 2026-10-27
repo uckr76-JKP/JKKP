@@ -1,0 +1,20 @@
+{
+  "name": "verifica-onchain-proof",
+  "version": "0.1.0",
+  "private": true,
+  "description": "베리피카브릿지 정산 검증 리포트 해시 온체인 기록",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:local": "hardhat run scripts/deploy.ts --network localhost",
+    "deploy:amoy": "hardhat run scripts/deploy.ts --network amoy",
+    "proof": "ts-node --transpile-only cli/proof.ts"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.19",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  }
+}
