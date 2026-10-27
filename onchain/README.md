@@ -7,13 +7,46 @@
 기본 네트워크는 **Polygon Amoy 테스트넷**입니다. 다른 EVM 체인은 `hardhat.config.ts`와
 `lib/registry.ts`의 `NETWORKS`에 RPC를 추가하면 됩니다.
 
+## 두 가지 기록 방식
+| 방식 | 명령 | 공개 체인 트랜잭션 | 용도 |
+|---|---|---|---|
+| **경량 원장 (권장)** | `npm run ledger` | 블록당 1건 (예: 하루 1회) | 리포트를 자체 해시체인에 쌓고, 블록 해시만 공개 체인에 앵커 |
+| 개별 기록 | `npm run proof` | 리포트당 1건 | 건수가 적거나 리포트 하나를 즉시 확정해야 할 때 |
+
+### 경량 원장 구조
+```
+리포트 해시 ─ submit ─▶ 대기열 ─ seal ─▶ Block n { prevHash, merkleRoot, createdAt, entryCount } ─ anchor ─▶ 공개 체인
+                                          ▲ 이전 블록 해시로 연결 (중간 블록 삭제·수정 시 audit에서 끊김 감지)
+```
+- **영수증(receipt)**: 리포트별 Merkle 증명 + 블록 헤더. 정산 당사자는 원장 없이 *리포트 파일 + 영수증*만으로 검증하고,
+  블록 해시를 공개 체인 기록과 대조합니다.
+- 리프 해시 = `SHA-256(0x00 ‖ keccak256(리포트 ID) ‖ 리포트 해시)`, 내부 노드 = `SHA-256(0x01 ‖ 왼쪽 ‖ 오른쪽)`, 홀수 노드는 복제하지 않고 위로 올림.
+- 블록 해시 = `SHA-256("VB-LEDGER-v1" ‖ height ‖ prevHash ‖ merkleRoot ‖ createdAt ‖ entryCount)`
+- 공개 체인 앵커 키 = `keccak256("VB-LEDGER-v1-BLOCK-<height>")`. 기존 `SettlementProofRegistry` 컨트랙트를 그대로 사용합니다.
+
+```bash
+npm run ledger -- submit  --id VR-2026-10-0001 --file ./report.pdf
+npm run ledger -- seal                                   # 대기열 → 블록 확정
+npm run ledger -- anchor                                 # 미앵커 블록을 공개 체인에 기록
+npm run ledger -- receipt --id VR-2026-10-0001 --out VR-2026-10-0001.receipt.json
+npm run ledger -- verify  --file ./report.pdf --receipt VR-2026-10-0001.receipt.json
+npm run ledger -- audit                                  # 원장 전체 점검
+```
+`verify` 종료 코드: `0` VALID · `1` INVALID · `2` NOT_ANCHORED(아직 앵커 전) · `3` 오류. `--offline`은 공개 체인 대조를 건너뜁니다.
+
+원장 파일은 기본 `ledger-data/ledger.json`이며 git에서 제외됩니다. **현재 저장소는 단일 프로세스용 JSON 파일**이라,
+여러 서버가 동시에 쓰는 운영 환경에서는 `LedgerStore` 인터페이스로 DB(Supabase 등) 저장소를 붙여야 합니다.
+
 ## 구성
 | 파일 | 역할 |
 |---|---|
 | `contracts/SettlementProofRegistry.sol` | 해시 기록 컨트랙트. 같은 리포트 ID는 덮어쓸 수 없음. owner가 기록 권한(recorder) 관리 |
 | `lib/proof.ts` | 파일 → SHA-256, 리포트 ID → bytes32 키 변환 |
 | `lib/registry.ts` | 컨트랙트 연결·대조 로직 (서버/Supabase 함수에서 재사용 가능) |
-| `cli/proof.ts` | 기록·대조 CLI |
+| `lib/merkle.ts` | Merkle 트리·증명 |
+| `lib/ledger.ts` | 경량 해시체인 원장 (submit/seal/receipt/audit, 영수증 검증) |
+| `cli/ledger.ts` | 경량 원장 CLI |
+| `cli/proof.ts` | 개별 기록·대조 CLI |
 | `scripts/deploy.ts` | 컨트랙트 배포 |
 | `test/` | 컨트랙트 테스트 |
 

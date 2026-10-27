@@ -8,7 +8,8 @@
     "test": "hardhat test",
     "deploy:local": "hardhat run scripts/deploy.ts --network localhost",
     "deploy:amoy": "hardhat run scripts/deploy.ts --network amoy",
-    "proof": "ts-node --transpile-only cli/proof.ts"
+    "proof": "ts-node --transpile-only cli/proof.ts",
+    "ledger": "ts-node --transpile-only cli/ledger.ts"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
