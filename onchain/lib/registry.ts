@@ -23,7 +23,7 @@ export const REGISTRY_ABI = [
 
 export const NETWORKS: Record<string, string> = {
   localhost: "http://127.0.0.1:8545",
-  amoy: process.env.AMOY_RPC_URL || "https://rpc-amoy.polygon.technology",
+  amoy: process.env.AMOY_RPC_URL || "https://polygon-amoy-bor-rpc.publicnode.com",
 };
 
 export function connectRegistry(opts: { network: string; address: string; privateKey?: string }) {

@@ -54,6 +54,18 @@ npm run ledger -- audit                                  # 원장 전체 점검
 - 해시·Merkle 계산은 DB가 아니라 `lib/ledger.ts` 한 곳에서만 합니다. DB 관리자가 트리거를 끄고 값을 고치는 경우는
   `audit`과 공개 체인 앵커로 잡아냅니다(테스트로 확인).
 
+## 정산 당사자용 검증 화면 (`web/`)
+리포트 파일과 영수증(`.receipt.json`)을 올리면 브라우저 안에서 ① 파일 해시 ② Merkle 증명 ③ 블록 해시를 확인하고,
+④ 공개 체인 기록과 대조합니다. **파일은 서버로 전송되지 않습니다.**
+
+```bash
+npm run web        # http://127.0.0.1:4173/ 로컬 미리보기 (ES 모듈이라 파일 더블클릭으로는 열리지 않음)
+```
+- 컨트랙트 배포 후 `web/verify-config.mjs`의 `registry`에 주소를 넣으면 ④ 공개 체인 대조가 켜집니다. 비어 있으면 ①~③만 확인합니다.
+- `web/verify-core.mjs`는 `lib/`와 같은 계산을 WebCrypto로 구현한 것입니다. `test/VerifyCore.ts`가 두 구현의 판정이 같은지 교차 검증합니다.
+- 운영 사이트에 올릴 때는 `web/` 폴더의 세 파일(`verify.html`, `verify-core.mjs`, `verify-config.mjs`)을 같은 경로에 두면 됩니다.
+  ethers는 jsDelivr CDN(`ethers@6.17.0`)에서 불러옵니다.
+
 ## 구성
 | 파일 | 역할 |
 |---|---|

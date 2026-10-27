@@ -9,7 +9,8 @@
     "deploy:local": "hardhat run scripts/deploy.ts --network localhost",
     "deploy:amoy": "hardhat run scripts/deploy.ts --network amoy",
     "proof": "ts-node --transpile-only cli/proof.ts",
-    "ledger": "ts-node --transpile-only cli/ledger.ts"
+    "ledger": "ts-node --transpile-only cli/ledger.ts",
+    "web": "ts-node --transpile-only cli/serve-web.ts"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.10",
