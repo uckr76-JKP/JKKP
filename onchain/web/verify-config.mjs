@@ -2,6 +2,6 @@
 export const CONFIG = {
   networkName: "Polygon Amoy 테스트넷",
   rpcUrl: "https://polygon-amoy-bor-rpc.publicnode.com",
-  registry: "",
+  registry: "0x42A3ad9490263AbAFA6e844a657aF66F82A416f7",
   explorer: "https://amoy.polygonscan.com",
 };

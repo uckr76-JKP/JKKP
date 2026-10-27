@@ -7,6 +7,14 @@
 기본 네트워크는 **Polygon Amoy 테스트넷**입니다. 다른 EVM 체인은 `hardhat.config.ts`와
 `lib/registry.ts`의 `NETWORKS`에 RPC를 추가하면 됩니다.
 
+## 배포 현황
+| 네트워크 | 컨트랙트 | 배포일 | 비고 |
+|---|---|---|---|
+| Polygon Amoy 테스트넷 | [`0x42A3ad9490263AbAFA6e844a657aF66F82A416f7`](https://amoy.polygonscan.com/address/0x42A3ad9490263AbAFA6e844a657aF66F82A416f7) | 2026-10-28 | owner/recorder = 테스트 지갑 `0xfC7D…2dc4`. 시험 원장 블록 #0 앵커 완료 |
+
+> 테스트넷 컨트랙트의 원장 블록 키 #0은 시험 실행에 이미 쓰였습니다. 실제 원장(Supabase)을 0번 블록부터 시작할 때는
+> 새 컨트랙트를 배포해서 쓰세요(같은 키는 덮어쓸 수 없음).
+
 ## 두 가지 기록 방식
 | 방식 | 명령 | 공개 체인 트랜잭션 | 용도 |
 |---|---|---|---|
